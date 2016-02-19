@@ -1,4 +1,26 @@
-<h2>{{ student.firstName }} {{ student.lastName }}</h2>
-<div>{{ student.address }}</div>
-<div>{{ student.phone }}</div>
-<div>{{ student.email }}</div>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <h3 class="panel-title">
+      {{ student.firstName }} {{ student.lastName }}
+    </h3>
+  </div>
+
+  <div class="panel-body">
+    <form>
+      <div class="form-group">
+        <label>Address</label>
+        <div>{{ student.address }}</div>
+      </div>
+
+      <div class="form-group">
+        <label>Phone number</label>
+        <div>{{ student.phone }}</div>
+      </div>
+
+      <div class="form-group">
+        <label>Email address</label>
+        <div>{{ student.email }}</div>
+      </div>
+    </form>
+  </div>
+</div>

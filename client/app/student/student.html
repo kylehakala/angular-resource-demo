@@ -1,9 +1,32 @@
-<ul>
-  <li ng-repeat="student in students">
-    <a ui-sref="student.detail({ id: student._id })">
-      {{ student.firstName }} {{ student.lastName }}
-    </a>
-  </li>
-</ul>
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Course count</th>
+          </tr>
+        </thead>
 
-<div ui-view=""></div>
+        <tbody>
+          <tr ng-repeat="student in students">
+            <td>
+              <a ui-sref="student.detail({ id: student._id })">
+                {{ student.firstName }} {{ student.lastName }}
+              </a>
+            </td>
+
+            <td>
+              {{ student.courses.length }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-lg-4">
+      <div ui-view=""></div>
+    </div>
+  </div>
+</div>
