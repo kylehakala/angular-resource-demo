@@ -126,7 +126,7 @@ General steps to make this:
     `client/app/student.detail/student.detail.controller.js`:
 
     ```javascript
-    angular.module('badassStudentManagerApp')
+    angular.module('studentManagerApp')
       .controller('StudentDetailCtrl', function ($scope, $stateParams, Student) {
         $scope.student = Student.get({ id: $stateParams.id });
       });
