@@ -22,4 +22,17 @@ and you'll want to tie it to `ngResource`:
       });
 ```
 So this creates a thing that will automatically pull down model data from the
-API endpoint we're about to make.
+API endpoint we're about to make:
+
+4. `yo angular-fullstack:endpoint student`: Generate a CRUD (**C**reate,
+**R**ead, **U**pdate, **D**elete) endpoint (and model definition) for students
+on the server side. The reason that the factory we made is so useful is that it
+already understands CRUD:
+  - `GET /api/students` returns a list of all students
+  - `GET /api/students?firstName=Phil` returns a list of all students named Phil
+  - `POST /api/students` creates a new student from the POSTed JSON and returns
+    the new student
+  - `GET /api/students/5fa493db` returns the student with ID 5fa493db
+  - `PUT /api/students/5fa493db` updates the student with ID 5fa493db from the
+    posted JSON and returns the student
+  - `DELETE /api/students/5fa493db` deletes the student with ID 5fa493db :(
