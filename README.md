@@ -15,7 +15,7 @@ it `/students` as a URL). Add it to the navbar with `student` as the state
 3. `yo angular-fullstack:factory student`: Create the student factory. (This is
 the neat part!) It'll spit out the factory in `client/student/student.service.js`
 and you'll want to tie it to `ngResource`:
-```
+```javascript
     angular.module('studentManagerApp')
       .factory('Student', function($resource) {
         return $resource('/api/students');
@@ -36,3 +36,22 @@ already understands CRUD:
   - `PUT /api/students/5fa493db` updates the student with ID 5fa493db from the
     posted JSON and returns the student
   - `DELETE /api/students/5fa493db` deletes the student with ID 5fa493db :(
+
+5. Update the student model (`server/api/student/student.model.js`) with the
+fields that you care about:
+```javascript
+    var StudentSchema = new mongoose.Schema({
+      firstName: String,
+      lastName: String,
+      dateOfBirth: String,
+      gender: String,
+      email: String,
+      phone: String,
+      address: String,
+      courses: Array
+    });
+```
+Note that right now we're cutting a few corners: Date of birth should probably
+be an actual date, but that would likely play hell with the seed data. Also,
+course would be better off as its own model, but we're just calling it an array
+for now so we don't have to deal with it. Cool?

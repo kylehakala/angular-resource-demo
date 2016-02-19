@@ -3,9 +3,14 @@
 var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 
 var StudentSchema = new mongoose.Schema({
-  name: String,
-  info: String,
-  active: Boolean
+  firstName: String,
+  lastName: String,
+  dateOfBirth: String,
+  gender: String,
+  email: String,
+  phone: String,
+  address: String,
+  courses: Array
 });
 
 export default mongoose.model('Student', StudentSchema);
