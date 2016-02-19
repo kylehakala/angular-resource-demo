@@ -1,1 +1,7 @@
-<div>This is the student view.</div>
+<div ng-controller="StudentCtrl as controller">
+  <ul>
+    <li ng-repeat="student in students">
+      {{ student.firstName }} {{ student.lastName }}
+    </li>
+  </ul>
+</div>

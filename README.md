@@ -57,3 +57,28 @@ course would be better off as its own model, but we're just calling it an array
 for now so we don't have to deal with it. Cool?
 
 6. Speaking of seed data, go ahead and drop that in `server/config/seed.js`.
+
+7. So now we just have to wire it up. In `client/app/student/student.controller.js`,
+inject the student factory:
+```javascript
+    .controller('StudentCtrl', function ($scope, Student) {
+```
+... and pull down the student models from the server:
+```javascript
+    $scope.students = Student.query();
+```
+... and that's literally all you have to do; the students are loaded and ready to
+use.
+To display a list of the students you just loaded, dump something like this in
+`app/student/student.html`:
+```html
+    <div ng-controller="StudentCtrl as controller">
+      <ul>
+        <li ng-repeat="student in students">
+          {{ student.firstName }} {{ student.lastName }}
+        </li>
+      </ul>
+    </div>
+```
+Crazy, right? That's seriously less than 30 lines of code you actually had to
+write.
