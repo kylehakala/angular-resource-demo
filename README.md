@@ -55,3 +55,5 @@ Note that right now we're cutting a few corners: Date of birth should probably
 be an actual date, but that would likely play hell with the seed data. Also,
 course would be better off as its own model, but we're just calling it an array
 for now so we don't have to deal with it. Cool?
+
+6. Speaking of seed data, go ahead and drop that in `server/config/seed.js`.
