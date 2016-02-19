@@ -1,1 +1,6 @@
-<div>This is the student.detail view.</div>
+<div ng-controller="StudentDetailCtrl as controller">
+  <h2>{{ student.firstName }} {{ student.lastName }}</h2>
+  <div>{{ student.address }}</div>
+  <div>{{ student.phone }}</div>
+  <div>{{ student.email }}</div>
+</div>

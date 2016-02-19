@@ -19,7 +19,7 @@ General steps to make this:
     ```javascript
     angular.module('studentManagerApp')
       .factory('Student', function($resource) {
-        return $resource('/api/students');
+        return $resource('/api/students/:id');
       });
     ```
     So this creates a thing that will automatically pull down model data from the
@@ -104,9 +104,39 @@ General steps to make this:
     </a>
     ```
 
-    `ui-sref` is a directive that `uiRouter` provides. [See here for more.][sref] If
-    you hover over the link, you'll see that the student's ID gets injected into
-    the URL.
+    (`ui-sref` is a directive that `uiRouter` provides. [See here for more][sref]
+    if you're into that kind of thing.)
+
+    If you hover over one of the student links, you'll see that the ID gets
+    dropped into the URL. If you click the links, though, you won't see any
+    change. What gives?
+
+9.  Turns out the route is actually being loaded, it's just that you can't see
+    it. That's because Angular renders stuff in a hierarchy. If you check out
+    `client/app/index.html`, you'll see this line:
+
+    ```html
+    <div ui-view=""></div>
+    ```
+
+    That's where the content from `client/app/student/student.html` is getting
+    dumped. So if you add the same line to `student.html`, you'll get the
+    contents of `student.detail.html`.
+
+10. At the moment, the student detail view doesn't know anything about the
+    student it's looking at. However, that's a quick fix. In the controller,
+    `client/app/student.detail/student.detail.controller.js`:
+
+    ```javascript
+    angular.module('badassStudentManagerApp')
+      .controller('StudentDetailCtrl', function ($scope, $stateParams, Student) {
+        $scope.student = Student.get({ id: $stateParams.id });
+      });
+    ```
+
+    That's pretty much the same thing as `student.controller.js`, except this
+    time the state parameters (i.e. the dynamic chunks of the URL) are injected
+    as well as the student factory.
 
 [ng-resource]: (https://docs.angularjs.org/api/ngResource)
-[sref]: https://github.com/angular-ui/ui-router/wiki/Quick-Reference
+[sref]: http://angular-ui.github.io/ui-router/site/#/api/ui.router.state.directive:ui-sref
