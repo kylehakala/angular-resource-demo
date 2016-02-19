@@ -2,7 +2,7 @@ Badass-o-matic student-management-o-tron 9000
 ===
 
 This is a thing that will hopefully demonstrate how awesome
-[`ngResource`](https://docs.angularjs.org/api/ngResource) is.
+[`ngResource`][ng-resource] is.
 
 General steps to make this:
 
@@ -16,10 +16,10 @@ it `/students` as a URL). Add it to the navbar with `student` as the state
 the neat part!) It'll spit out the factory in `client/student/student.service.js`
 and you'll want to tie it to `ngResource`:
 ```javascript
-    angular.module('studentManagerApp')
-      .factory('Student', function($resource) {
-        return $resource('/api/students');
-      });
+   angular.module('studentManagerApp')
+     .factory('Student', function($resource) {
+       return $resource('/api/students');
+     });
 ```
 So this creates a thing that will automatically pull down model data from the
 API endpoint we're about to make:
@@ -40,16 +40,16 @@ already understands CRUD:
 5. Update the student model (`server/api/student/student.model.js`) with the
 fields that you care about:
 ```javascript
-    var StudentSchema = new mongoose.Schema({
-      firstName: String,
-      lastName: String,
-      dateOfBirth: String,
-      gender: String,
-      email: String,
-      phone: String,
-      address: String,
-      courses: Array
-    });
+   var StudentSchema = new mongoose.Schema({
+     firstName: String,
+     lastName: String,
+     dateOfBirth: String,
+     gender: String,
+     email: String,
+     phone: String,
+     address: String,
+     courses: Array
+   });
 ```
 Note that right now we're cutting a few corners: Date of birth should probably
 be an actual date, but that would likely play hell with the seed data. Also,
@@ -68,17 +68,33 @@ inject the student factory:
     $scope.students = Student.query();
 ```
 ... and that's literally all you have to do; the students are loaded and ready to
-use.
-To display a list of the students you just loaded, dump something like this in
-`app/student/student.html`:
+use. To display a list of the students you just loaded, dump something like this
+in `app/student/student.html`:
 ```html
-    <div ng-controller="StudentCtrl as controller">
-      <ul>
-        <li ng-repeat="student in students">
-          {{ student.firstName }} {{ student.lastName }}
-        </li>
-      </ul>
-    </div>
+   <div ng-controller="StudentCtrl as controller">
+     <ul>
+       <li ng-repeat="student in students">
+         {{ student.firstName }} {{ student.lastName }}
+       </li>
+     </ul>
+   </div>
 ```
 Crazy, right? That's seriously less than 30 lines of code you actually had to
-write.
+write. It gets even better when you want to edit:
+
+8. `yo angular-fullstack:route student.detail`: Generate a route for detail on
+individual students. Use `/:id` as the path. Since this is a child route (the
+route name determines that it's a child of the student route), it'll inherit the
+base path of its parent. That means we can link students to a detail page like
+this:
+```html
+   <a ui-sref="student.detail({ id: student._id })">
+     {{ student.firstName }} {{ student.lastName }}
+   </a>
+```
+`ui-sref` is a directive that `uiRouter` provides. [See here for more.][sref] If
+you hover over the link, you'll see that the student's ID gets injected into
+the URL.
+
+[ng-resource]: (https://docs.angularjs.org/api/ngResource)
+[sref]: https://github.com/angular-ui/ui-router/wiki/Quick-Reference
