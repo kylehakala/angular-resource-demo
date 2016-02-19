@@ -80,13 +80,11 @@ General steps to make this:
     in `app/student/student.html`:
 
     ```html
-    <div ng-controller="StudentCtrl as controller">
-      <ul>
-        <li ng-repeat="student in students">
-          {{ student.firstName }} {{ student.lastName }}
-        </li>
-      </ul>
-    </div>
+    <ul>
+      <li ng-repeat="student in students">
+        {{ student.firstName }} {{ student.lastName }}
+      </li>
+    </ul>
     ```
 
     Crazy, right? That's seriously less than 30 lines of code you actually had to
