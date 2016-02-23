@@ -251,6 +251,38 @@ and [`ngResource`][ngResource].
     unfamiliar. Basically, we're saying "whenever you're done saving, call the
     first function if it went okay and the second if it didn't."
 
+*   That's the worst of it, promise (get it?). So now let's worry about getting
+    the student index view to update when we save changes.
+
+    To do that, we're going to cheat a little and leverage something the
+    generator gave us for free, WebSocket updates. An easy way to think about
+    WebSockets is as a communication line that's always open between the server
+    and the client. [Google it for more.][websockets] [It's badass.][barry].
+
+    This is way easier than it should be because the socket stuff is already
+    taken care of:
+
+    ```javascript
+    angular.module('badassStudentManagerApp')
+      .controller('StudentCtrl', function ($scope, socket, Student) {
+        $scope.students = [];
+
+        Student.query(function(results) {
+          $scope.students = results;
+          socket.syncUpdates('student', $scope.students);
+        });
+
+        $scope.$on('$destroy', function() {
+          socket.unsyncUpdates('student');
+        });
+      });
+    ```
+
+    This code is adapted from `client/app/main/main.controller.js`, the thing
+    that the generator gave us. The key difference is that we're using
+    `ngResource` to pull stuff down.
+
+[barry]: http://www.morris.umn.edu/events/commencement/archive/2005/images/7.jpg
 [fullstack]: https://github.com/angular-fullstack/generator-angular-fullstack
 [jsonapi]: http://jsonapi.org/examples/
 [ngModel]: https://docs.angularjs.org/api/ng/directive/ngModel
@@ -258,3 +290,4 @@ and [`ngResource`][ngResource].
 [promises]: https://www.promisejs.org/
 [restful-tutorial]: http://kirkbushell.me/angular-js-using-ng-resource-in-a-more-restful-manner/
 [sref]: http://angular-ui.github.io/ui-router/site/#/api/ui.router.state.directive:ui-sref
+[websockets]: http://www.html5rocks.com/en/tutorials/websockets/basics/
