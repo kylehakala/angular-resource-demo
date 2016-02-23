@@ -257,7 +257,7 @@ and [`ngResource`][ngResource].
     To do that, we're going to cheat a little and leverage something the
     generator gave us for free, WebSocket updates. An easy way to think about
     WebSockets is as a communication line that's always open between the server
-    and the client. [Google it for more.][websockets] [It's badass.][barry].
+    and the client. [Google for more.][websockets] [It's badass.][barry]
 
     This is way easier than it should be because the socket stuff is already
     taken care of:
