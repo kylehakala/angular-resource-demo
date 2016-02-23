@@ -1,6 +1,8 @@
 Badass-o-matic student-management-o-tron 9000
 ===
 
+[![Build Status][build-image]][build-url]
+
 This is a thing that will hopefully demonstrate why a model layer in Angular is
 a good idea and why [`ngResource`][ngResource] is a decent thing to use.
 
@@ -377,6 +379,8 @@ and [`ngResource`][ngResource].
         an existing resource.
 
 [barry]: http://www.morris.umn.edu/events/commencement/archive/2005/images/7.jpg
+[build-image]: https://travis-ci.org/dstelljes/angular-resource-demo.svg?branch=master
+[build-url]: https://travis-ci.org/dstelljes/angular-resource-demo
 [fullstack]: https://github.com/angular-fullstack/generator-angular-fullstack
 [jsonapi]: http://jsonapi.org/examples/
 [ngModel]: https://docs.angularjs.org/api/ng/directive/ngModel
