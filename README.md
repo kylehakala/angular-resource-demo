@@ -19,7 +19,7 @@ General steps to make this:
     ```javascript
     angular.module('studentManagerApp')
       .factory('Student', function($resource) {
-        return $resource('/api/students/:id');
+        return new $resource('/api/students/:id');
       });
     ```
     So this creates a thing that will automatically pull down model data from the
@@ -163,7 +163,7 @@ At this point, we're faced with a few problems:
     with something like this...
 
     ```javascript
-    $scope.students = Student.query({
+    Student.query({
       filter: {
         firstName: 'Joe'
       },
@@ -224,7 +224,7 @@ and [`ngResource`][ngResource].
     ```javascript
     angular.module('studentManagerApp')
       .factory('Student', function(Resource) {
-        return Resource('/api/students/:id');
+        return new Resource('/api/students/:id');
       });
     ```
 
@@ -316,6 +316,65 @@ and [`ngResource`][ngResource].
     student with ID [id]!" If you pull up the developer tools in your browser
     (usually F12) and check out the Network tab, you can see this happen as you
     edit stuff.
+
+*   We've hit two of the main problems now, so let's talk about filtering. To
+    get the index to work as described above (mostly personal preference), we're
+    going to make some more changes to the base resource service. Specifically,
+    the `index` method is going to look for `filter`, `order`, `page`, and
+    `count` parameters and build the index URL accordingly.
+
+    The end game here is to write something like this (again, personal taste)...
+
+    ```javascript
+    Student.query({
+      // The fields we're filtering by. If only the value is specified, we'll
+      // assume the `eq` (equal to) operator. Operators correspond to the Mongo
+      // query selectors.
+      filter: {
+        firstName: 'Joe',
+        dateOfBirth: {
+          value: '1990-01-01',
+          operator: 'lte'
+        }
+      },
+      // The sort operations in order of precendence. The hyphen/minus sign
+      // signals descending order.
+      order: ['lastName', '-dateOfBirth'],
+      // The active page number and results per page. This is going to be an
+      // abstraction over the `limit` and `offset` fields from earlier.
+      page: 3,
+      count: 10
+    });
+    ```
+
+    ... and get a URL that looks like this:
+
+    ```
+    GET /api/students?filter[firstName]=Joe&filter[dateOfBirth][lte]=1990-01-01&order=lastName,-dateOfBirth&limit=10&offset=20
+    ```
+
+    (For sake of sanity, let's assume 1-indexed page numbers.)
+
+    We're (finally) going to practice some TDD here. Angular provides a service
+    called `$httpBackend` that mocks (pretends to be, not berates) `$http` and
+    lets us check that the right HTTP requests are happening.
+
+    First, to get the hang of the whole thing, let's retroactively implement a
+    few tests that make sure our custom create/update/save methods are working
+    as intended. In Jasmine parlance, when we describe the Resource factory, it
+    should:
+
+    -   Issue a POST request to the resource endpoint when `$create` is called
+        on a new resource.
+
+    -   Issue a PUT request to the resource endpoint when `$update` is called on
+        an existing resource.
+
+    -   Issue a POST request to the resource endpoint when `$save` is called on
+        a new resource.
+
+    -   Issue a PUT request to the resource endpoint when `$save` is called on
+        an existing resource.
 
 [barry]: http://www.morris.umn.edu/events/commencement/archive/2005/images/7.jpg
 [fullstack]: https://github.com/angular-fullstack/generator-angular-fullstack

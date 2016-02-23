@@ -2,5 +2,5 @@
 
 angular.module('badassStudentManagerApp')
   .factory('Student', function(Resource) {
-    return Resource('/api/students/:id');
+    return new Resource('/api/students/:id');
   });
