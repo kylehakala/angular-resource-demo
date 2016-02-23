@@ -41,12 +41,12 @@ describe('base resource factory', function() {
         return [201, data];
       });
 
-      // Respond to PUT requests with the existing gerbil data:
-      $httpBackend.when('PUT', /\/api\/gerbils\/(.+)/) // whenRoute was whining
-        .respond(function(method, url, data, headers, params) {
-          // Just return the data:
-          return [200, data];
-        });
+    // Respond to PUT requests with the existing gerbil data:
+    $httpBackend.when('PUT', /\/api\/gerbils\/(.+)/) // whenRoute was whining
+      .respond(function(method, url, data, headers, params) {
+        // Just return the data:
+        return [200, data];
+      });
   }));
 
   // Ensure that nothing weird happens:
