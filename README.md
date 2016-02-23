@@ -2,7 +2,7 @@ Badass-o-matic student-management-o-tron 9000
 ===
 
 This is a thing that will hopefully demonstrate why a model layer in Angular is
-a good idea and why [`ngResource`][ng-resource] is a decent thing to use.
+a good idea and why [`ngResource`][ngResource] is a decent thing to use.
 
 General steps to make this:
 
@@ -187,6 +187,74 @@ At this point, we're faced with a few problems:
     generated. Better testing is actually one reason why a solid model layer is
     a good thing.)
 
+Let's tackle these. The generator isn't going to be any help here because we're
+dealing with limitations/bad decisions in both [`angular-fullstack`][fullstack]
+and [`ngResource`][ngResource].
+
+*   First, let's make editing work. This isn't a story we have to worry about
+    per se, but _as a person who has to use this student management system, I
+    think it's beyond freaking reasonable that I should be able to edit students;
+    how in the world would it be a student management system if there's no way
+    to edit students; I can't possibly be demanding something unreasonable here;
+    hell, I work at a school that uses Mongo to manage our mission-critical
+    student database; we clearly have enough systemic problems that a student
+    management application that can't actually manage students might actually be
+    the straw that finally breaks our underfunded, dysfunctional camel's back_.
+
+    Teaching the student factory how to PUT isn't all that bad. We're actually
+    going to define a new base resource factory (yeah, yeah, I know) that's a
+    little more sensible than the `ngResource` default. (Code adapted from
+    [here][restful-tutorial].)
+
+    Because this whole project is all about the generator and its magic, let's
+    put it to work with `yo angular-fullstack:factory resource`. Essentially,
+    we're going to modify the resource interface as follows:
+
+    1.  Create a new `update` method.
+    2.  Create a new `create` method (heh).
+    3.  Override the existing `save` method to intelligently create or save
+        depending on what's needed.
+
+    There's sort of a lot of code there and this bullet is already way too long,
+    so all the code is commented in `client/app/resource/resource.service.js`.
+    It's the most conceptually challenging thing we're going to do.
+
+    Now, we just make the student model use our `Resource` service instead of
+    `$resource`:
+
+    ```javascript
+    angular.module('studentManagerApp')
+      .factory('Student', function(Resource) {
+        return Resource('/api/students/:id');
+      });
+    ```
+
+    To make the student detail form capable of editing, we just bind the fields
+    we care about to form controls with [`ngModel`][ngModel] and add a save
+    handler on the controller:
+
+    ```javascript
+    $scope.save = function() {
+      $scope.student.$save()
+        .then(function() {
+          $state.go('^');
+        }, function() {
+          console.log('An error happened / You write terrible software / This is meaningless');
+        });
+    ```
+
+    This sends the PUT request and, when completed, redirects to the parent
+    state (that's what the `^` is shorthand for). Note that you have to inject
+    `$state` into the controller for that to work.
+
+    The `.then` thing has to do with [Promises][promises], which may be
+    unfamiliar. Basically, we're saying "whenever you're done saving, call the
+    first function if it went okay and the second if it didn't."
+
+[fullstack]: https://github.com/angular-fullstack/generator-angular-fullstack
 [jsonapi]: http://jsonapi.org/examples/
-[ng-resource]: https://docs.angularjs.org/api/ngResource
+[ngModel]: https://docs.angularjs.org/api/ng/directive/ngModel
+[ngResource]: https://docs.angularjs.org/api/ngResource
+[promises]: https://www.promisejs.org/
+[restful-tutorial]: http://kirkbushell.me/angular-js-using-ng-resource-in-a-more-restful-manner/
 [sref]: http://angular-ui.github.io/ui-router/site/#/api/ui.router.state.directive:ui-sref

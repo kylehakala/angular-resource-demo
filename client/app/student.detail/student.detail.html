@@ -6,21 +6,23 @@
   </div>
 
   <div class="panel-body">
-    <form>
+    <form ng-submit="save()">
       <div class="form-group">
         <label>Address</label>
-        <div>{{ student.address }}</div>
+        <input type="text" class="form-control" ng-model="student.address" />
       </div>
 
       <div class="form-group">
         <label>Phone number</label>
-        <div>{{ student.phone }}</div>
+        <input type="text" class="form-control" ng-model="student.phone" />
       </div>
 
       <div class="form-group">
         <label>Email address</label>
-        <div>{{ student.email }}</div>
+        <input type="text" class="form-control" ng-model="student.email" />
       </div>
+
+      <button type="submit" class="btn btn-default">Save</button>
     </form>
   </div>
 </div>

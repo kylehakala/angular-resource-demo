@@ -1,6 +1,6 @@
 'use strict';
 
 angular.module('badassStudentManagerApp')
-  .factory('Student', function($resource) {
-    return $resource('/api/students/:id');
+  .factory('Student', function(Resource) {
+    return Resource('/api/students/:id');
   });
