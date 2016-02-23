@@ -1,8 +1,8 @@
 Badass-o-matic student-management-o-tron 9000
 ===
 
-This is a thing that will hopefully demonstrate how awesome
-[`ngResource`][ng-resource] is.
+This is a thing that will hopefully demonstrate why a model layer in Angular is
+a good idea and why [`ngResource`][ng-resource] is a decent thing to use.
 
 General steps to make this:
 
@@ -102,7 +102,7 @@ General steps to make this:
     </a>
     ```
 
-    (`ui-sref` is a directive that `uiRouter` provides. [See here for more][sref]
+    (`uiSref` is a directive that `uiRouter` provides. [See here for more][sref]
     if you're into that kind of thing.)
 
     If you hover over one of the student links, you'll see that the ID gets
@@ -121,8 +121,8 @@ General steps to make this:
     dumped. So if you add the same line to `student.html`, you'll get the
     contents of `student.detail.html`.
 
-10. At the moment, the student detail view doesn't know anything about the
-    student it's looking at. However, that's a quick fix. In the controller,
+10. Currently, the student detail view doesn't know anything about the student
+    it's looking at. Fortunately, that's a quick fix. In the controller,
     `client/app/student.detail/student.detail.controller.js`:
 
     ```javascript
@@ -136,5 +136,57 @@ General steps to make this:
     time the state parameters (i.e. the dynamic chunks of the URL) are injected
     as well as the student factory.
 
-[ng-resource]: (https://docs.angularjs.org/api/ngResource)
+At this point, we're faced with a few problems:
+
+*   If a student is loaded in the detail view, that student model actually
+    exists twice in memory: once in the student index controller and once in the
+    student detail controller. On its face, that's not a huge deal, but there
+    are some practical consequences.
+
+    Say we change the student detail view so that we can edit and save students.
+    It would sync up with the server and everything would be cool, but the
+    changes wouldn't be reflected in the student index view.
+
+*   Speaking of editing, the student factory we made doesn't actually support
+    PUT requests. Take that up with the Angular guys, maybe?
+
+*   On both the server side and the client side, there isn't a decent way to
+    filter results. It'd be cool if we could do something like this...
+
+    ```
+    GET /api/students?filter[firstName]=Joe&order[lastName]=asc&limit=20
+    ```
+
+    ... and get back at most 20 students named Joe ordered by last name. But
+    that's not a thing because the API has no idea how to filter and if we try
+    to query it with something like this...
+
+    ```javascript
+    $scope.students = Student.query({
+      filter: {
+        firstName: 'Joe'
+      },
+      order: {
+        lastName: 'asc'
+      },
+      limit: 20
+    });
+    ```
+
+    ... `ngResource` comes up with some abomination like this:
+
+    ```
+    GET /api/students?filter=%7B%22firstName%22:%22Joe%22%7D&limit=20&order=%7B%22lastName%22:%22asc%22%7D
+    ```
+
+    (This URL scheme is sort of based on [the JSON API spec][jsonapi], which is
+    a reasonably well-thought-out approach to making APIs suck less.)
+
+*   There are no tests yet. (But screw 'em, amirite? Kidding aside, there aren't
+    really any good reasons to write tests for stuff that's pretty much all
+    generated. Better testing is actually one reason why a solid model layer is
+    a good thing.)
+
+[jsonapi]: http://jsonapi.org/examples/
+[ng-resource]: https://docs.angularjs.org/api/ngResource
 [sref]: http://angular-ui.github.io/ui-router/site/#/api/ui.router.state.directive:ui-sref
