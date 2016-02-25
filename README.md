@@ -203,7 +203,7 @@ extensibility problems:
     generated. Better testing is actually one reason why a solid model layer is
     a good thing.)
 
-## MAKE ANGULAR GREAT AGAIN
+## MAKING ANGULAR GREAT AGAIN
 
 Let's tackle these. The generator isn't going to be any help here because we're
 dealing with limitations/bad decisions in both [`angular-fullstack`][fullstack]
@@ -337,7 +337,7 @@ and [`ngResource`][ngResource].
 *   We've hit two of the main problems now, so let's talk about filtering. To
     get the index to work as described above (mostly personal preference), we're
     going to make some more changes to the base resource service. Specifically,
-    the `index` method is going to look for `filter`, `order`, `page`, and
+    the `query` method is going to look for `filter`, `order`, `page`, and
     `count` parameters and build the index URL accordingly.
 
     The end game here is to write something like this (again, personal taste)...
@@ -428,6 +428,7 @@ and [`ngResource`][ngResource].
     ```javascript
     query: {
       method: 'GET',
+      isArray: true,
       paramSerializer: serialize
     },
     ```
@@ -435,28 +436,55 @@ and [`ngResource`][ngResource].
     Documentation on this stuff ranges from limited to nonexistent. What's going
     on here is pretty simple: the configuration of our custom methods gets
     passed almost verbatim to `$http`, with `$resource` doing some rewriting to
-    accomplish its goals.
+    accomplish its goals. That means that when we define custom methods, we can
+    generally pass in configuration [like we'd do for `$http`][http-config].
 
-    You're probably thinking, _as a person who is earnestly trying to follow
-    this aimless tour of Angular's guts, I would really like to know what the
-    hell that `$httpParamSerializerJQLike` thing is_. It's not as bad as its
-    name, fortunately. Remember how earlier when we tried to pass a complex JSON
+    That said, you're probably still thinking, _as a person who is earnestly
+    trying to follow this aimless tour of Angular's guts, I would really like to
+    hear less about how "simple" this is and more about what the hell is going
+    on with `$httpParamSerializerJQLike`_. It's not as bad as its name,
+    fortunately. Remember how earlier when we tried to pass a complex JSON
     object into `Student.query` it stringified it and embedded it in the URL?
     That was its sister, `$httpParamSerializer`, which is used by default. The
     reason we bother pulling in the longer, uglier service ("all HTTP parameter
     serializers are beautiful, you superficial boor!") is that [it'll take care
-    of the bracket expansion for us][jquery-param]. Just using it here makes the
-    filter test pass.
+    of the bracket expansion for us like jQuery would][jquery-param]. In fact,
+    the filter test passes now just because we're using it.
 
     Now we just massage the parameters into the structure that we want. None of
     that is especially interesting; it's all in `resource.service.js` and the
     tests pass so we're good.
+
+    The next step is to get the server to honor all of that. Compared to the
+    Angular work, that's not bad at all. First, we'll make a helper function
+    that takes a Mongoose model and the query parameters and builds a database
+    query from it. All of the code for that is in `server/api/query.js`. To be
+    honest, I have no idea how to test it. It seems like you could use Sinon to
+    spy on method calls, but the model returns a query object and that's a whole
+    weird thing. It works, though, so whatever. Come back to it later, maybe?
+
+    To enable the query building, import the helper (ES6!)...
+
+    ```javascript
+    import { find } from '../query';
+    ```
+
+    ... and replace the `Student.findAsync` call on the `student.controller.js`
+    `index` method with a call to the helper...
+
+    ```javascript
+    find(Student, req.query)
+    ```
+
+    and just like that, filter parameters work like we'd expect them to. Now we
+    can actually put these new capabilities to work.
 
 [3601-lab]: https://github.com/UMM-CSci-3601-S16/3601-S16-lab5_json-data-processing
 [barry]: http://www.morris.umn.edu/events/commencement/archive/2005/images/7.jpg
 [build-image]: https://travis-ci.org/dstelljes/angular-resource-demo.svg?branch=master
 [build-url]: https://travis-ci.org/dstelljes/angular-resource-demo
 [fullstack]: https://github.com/angular-fullstack/generator-angular-fullstack
+[http-config]: https://docs.angularjs.org/api/ng/service/$http
 [jquery-param]: http://api.jquery.com/jquery.param/
 [jsonapi]: http://jsonapi.org/examples/
 [ngModel]: https://docs.angularjs.org/api/ng/directive/ngModel

@@ -11,6 +11,7 @@
 
 import _ from 'lodash';
 import Student from './student.model';
+import { find } from '../query';
 
 function respondWithResult(res, statusCode) {
   statusCode = statusCode || 200;
@@ -61,7 +62,7 @@ function handleError(res, statusCode) {
 
 // Gets a list of Students
 export function index(req, res) {
-  Student.findAsync()
+  find(Student, req.query)
     .then(respondWithResult(res))
     .catch(handleError(res));
 }

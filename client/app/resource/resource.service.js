@@ -45,6 +45,7 @@ angular.module('badassStudentManagerApp')
         },
         query: {
           method: 'GET',
+          isArray: true,
           paramSerializer: serialize
         },
         update: {
