@@ -55,7 +55,7 @@ describe('base resource factory', function() {
     $httpBackend.verifyNoOutstandingRequest();
   });
 
-  it('should POST to resource endpoint on create', function () {
+  it('should POST to resource endpoint on create', function() {
     $httpBackend.expect('POST', '/api/gerbils');
 
     mufasa.$create(null, function(model) {
@@ -66,7 +66,7 @@ describe('base resource factory', function() {
     $httpBackend.flush();
   });
 
-  it('should PUT to resource endpoint on update', function () {
+  it('should PUT to resource endpoint on update', function() {
     $httpBackend.expect('PUT', '/api/gerbils/42');
 
     scar.name = 'Scaaaar!';
@@ -79,7 +79,7 @@ describe('base resource factory', function() {
     $httpBackend.flush();
   });
 
-  it('should POST to resource endpoint on new model save', function () {
+  it('should POST to resource endpoint on new model save', function() {
     $httpBackend.expect('POST', '/api/gerbils');
 
     mufasa.$save(null, function(model) {
@@ -90,7 +90,7 @@ describe('base resource factory', function() {
     $httpBackend.flush();
   });
 
-  it('should PUT to resource endpoint on existing model save', function () {
+  it('should PUT to resource endpoint on existing model save', function() {
     $httpBackend.expect('PUT', '/api/gerbils/42');
 
     scar.name = 'Scaaaar!';
@@ -98,6 +98,53 @@ describe('base resource factory', function() {
     scar.$save(null, function(model) {
       expect(model._id).toBe(42);
       expect(model.name).toBe('Scaaaar!');
+    });
+
+    $httpBackend.flush();
+  });
+
+  it('should URL-ify filter parameter', function() {
+    $httpBackend.expect('GET', '/api/gerbils?filter[name]=Elvira&filter[litters][$gte]=10');
+
+    Gerbil.query({
+      filter: {
+        name: 'Elvira',
+        litters: {
+          value: 10,
+          operator: '$gte'
+        }
+      }
+    });
+
+    $httpBackend.flush();
+  });
+
+  it('should implode order parameter', function() {
+    $httpBackend.expect('GET', '/api/gerbils?order=-age,weight');
+
+    Gerbil.query({
+      order: ['-age', 'weight']
+    });
+
+    $httpBackend.flush();
+  });
+
+  it('should accept result count parameter', function() {
+    $httpBackend.expect('GET', '/api/gerbils?limit=14');
+
+    Gerbil.query({
+      count: 14
+    });
+
+    $httpBackend.flush();
+  });
+
+  it('should calculate limit and offset based on page and count parameters', function() {
+    $httpBackend.expect('GET', '/api/gerbils?limit=14&offset=28');
+
+    Gerbil.query({
+      count: 14,
+      page: 2
     });
 
     $httpBackend.flush();

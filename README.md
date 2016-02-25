@@ -373,7 +373,7 @@ and [`ngResource`][ngResource].
     (For sake of sanity, let's assume 1-indexed page numbers.)
 
     We're (finally) going to practice some TDD here. Angular provides a service
-    called `$httpBackend` that mocks (pretends to be, not berates) `$http` and
+    called `$httpBackend` that mocks (pretends to be, not ridicules) `$http` and
     lets us check that the right HTTP requests are happening.
 
     First, to get the hang of the whole thing, let's retroactively implement a
@@ -392,6 +392,28 @@ and [`ngResource`][ngResource].
 
     -   Issue a PUT request to the resource endpoint when `$save` is called on
         an existing resource.
+
+    All of the code for those scenarios is in `resource.service.spec.js`, and
+    they confirm that creating and saving objects works as expected. Good to
+    know.
+
+    The idealized Resource factory should do a few more things:
+
+    -   Break the filter object apart into query parameters (like in the
+        idealized example above).
+
+    -   Implode `order` if necessary, so `['lastName', '-dateOfBirth']` would
+        become `lastName,-dateOfBirth`. (If we're still doing stories, _as a guy
+        unnecessarily bothered by stupid cosmetic details, this is just a thing
+        that I want, okay?_)
+
+    -   Turn `count` into `limit`. (You're probably wondering why you're still
+        reading this.)
+
+    -   Turn `page` and `count` into `offset` and `limit`.
+
+    Again, all of the code for these is in `resource.service.spec.js` and, as
+    expected, each one fails.
 
 [3601-lab]: https://github.com/UMM-CSci-3601-S16/3601-S16-lab5_json-data-processing
 [barry]: http://www.morris.umn.edu/events/commencement/archive/2005/images/7.jpg
