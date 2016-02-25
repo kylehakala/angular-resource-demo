@@ -1,12 +1,14 @@
-Badass-o-matic student-management-o-tron 9000
-===
+# Badass-o-matic student-management-o-tron 9000
 
 [![Build Status][build-image]][build-url]
 
-This is a thing that will hopefully demonstrate why a model layer in Angular is
-a good idea and why [`ngResource`][ngResource] is a decent thing to use.
+This application is a circuitous, over-engineered solution for [Lab 5][3601-lab]
+of the Spring 2016 Software Development class at Morris. Though the goal of the
+lab is to learn something about sorting and filtering models in Angular, the
+primary objective here is to come up with a best-practice solution that
+demonstrates what a more robust "real world" application might look like.
 
-General steps to make this:
+## Building the app
 
 1.  `yo angular-fullstack`: Run the generator. Go cure cancer while `npm` runs.
 
@@ -138,7 +140,18 @@ General steps to make this:
     time the state parameters (i.e. the dynamic chunks of the URL) are injected
     as well as the student factory.
 
-At this point, we're faced with a few problems:
+## Finding some pain points
+
+**Heads up:** From here on out, this becomes less of a guide to implement some
+useful tools and more of a dive into some weird layers of abstraction. If you're
+using this to complete the lab, you're probably going to want to stop here. If
+you're up for a rambling trip into Angular internals, by all means continue.
+
+So far, we've harnessed the generator to give us a working master-detail view
+for a surprisingly small amount of work. However, the app relies on pulling down
+every model in the database and dealing with the whole collection on the client
+side. This isn't an approach that will scale, and we're faced with a few other
+extensibility problems:
 
 *   If a student is loaded in the detail view, that student model exists twice
     in memory: once in the student index controller and once in the student
@@ -152,8 +165,8 @@ At this point, we're faced with a few problems:
 *   Speaking of editing, the student factory we made totally doesn't support PUT
     requests. Take that up with the Angular guys, maybe?
 
-*   On both the server side and the client side, there isn't a decent way to
-    filter results. It'd be cool if we could do something like this...
+*   There isn't a decent way to filter results on the API. It'd be cool if we
+    could do something like this...
 
     ```
     GET /api/students?filter[firstName]=Joe&sort=lastName,-dateOfBirth&limit=20&offset=10
@@ -189,6 +202,8 @@ At this point, we're faced with a few problems:
     really any good reasons to write tests for stuff that's pretty much all
     generated. Better testing is actually one reason why a solid model layer is
     a good thing.)
+
+## MAKE ANGULAR GREAT AGAIN
 
 Let's tackle these. The generator isn't going to be any help here because we're
 dealing with limitations/bad decisions in both [`angular-fullstack`][fullstack]
@@ -242,7 +257,7 @@ and [`ngResource`][ngResource].
         in `resource.service.js`) which extends...
     -   **AngularResourceFactory** (the `$resource` service we get from Angular)
 
-    The reason we call some of these things factories is that their job is to
+    The reason that the factories are called factories is that their job is to
     *make* student objects that know how to interact with the API. If we were to
     use `$http` to pull down model data, we'd only have dumb objects and would
     have to write additional `$http` code to save or delete. Therein lies the
@@ -378,6 +393,7 @@ and [`ngResource`][ngResource].
     -   Issue a PUT request to the resource endpoint when `$save` is called on
         an existing resource.
 
+[3601-lab]: https://github.com/UMM-CSci-3601-S16/3601-S16-lab5_json-data-processing
 [barry]: http://www.morris.umn.edu/events/commencement/archive/2005/images/7.jpg
 [build-image]: https://travis-ci.org/dstelljes/angular-resource-demo.svg?branch=master
 [build-url]: https://travis-ci.org/dstelljes/angular-resource-demo
