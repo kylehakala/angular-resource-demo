@@ -104,15 +104,15 @@ describe('base resource factory', function() {
   });
 
   it('should URL-ify filter parameter', function() {
-    $httpBackend.expect('GET', '/api/gerbils?filter[name]=Elvira&filter[litters][$gte]=10');
+    // encodeURI is necessary here because we've got some weird stuff:
+    $httpBackend.expect('GET', encodeURI('/api/gerbils?filter[litters][$gte]=10&filter[name]=Elvira')).respond(200);
 
     Gerbil.query({
       filter: {
-        name: 'Elvira',
         litters: {
-          value: 10,
-          operator: '$gte'
-        }
+          $gte: 10
+        },
+        name: 'Elvira'
       }
     });
 
@@ -120,7 +120,7 @@ describe('base resource factory', function() {
   });
 
   it('should implode order parameter', function() {
-    $httpBackend.expect('GET', '/api/gerbils?order=-age,weight');
+    $httpBackend.expect('GET', '/api/gerbils?order=-age,weight').respond(200);
 
     Gerbil.query({
       order: ['-age', 'weight']
@@ -129,8 +129,8 @@ describe('base resource factory', function() {
     $httpBackend.flush();
   });
 
-  it('should accept result count parameter', function() {
-    $httpBackend.expect('GET', '/api/gerbils?limit=14');
+  it('should rewrite result count parameter', function() {
+    $httpBackend.expect('GET', '/api/gerbils?limit=14').respond(200);
 
     Gerbil.query({
       count: 14
@@ -140,11 +140,11 @@ describe('base resource factory', function() {
   });
 
   it('should calculate limit and offset based on page and count parameters', function() {
-    $httpBackend.expect('GET', '/api/gerbils?limit=14&offset=28');
+    $httpBackend.expect('GET', '/api/gerbils?limit=14&offset=28').respond(200);
 
     Gerbil.query({
       count: 14,
-      page: 2
+      page: 3
     });
 
     $httpBackend.flush();

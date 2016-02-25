@@ -299,7 +299,7 @@ and [`ngResource`][ngResource].
     taken care of:
 
     ```javascript
-    angular.module('badassStudentManagerApp')
+    angular.module('studentManagerApp')
       .controller('StudentCtrl', function ($scope, socket, Student) {
         $scope.students = [];
 
@@ -344,14 +344,11 @@ and [`ngResource`][ngResource].
 
     ```javascript
     Student.query({
-      // The fields we're filtering by. If only the value is specified, we'll
-      // assume the `eq` (equal to) operator. Operators correspond to the Mongo
-      // query selectors.
+      // The fields we're filtering by, Mongo-style.
       filter: {
         firstName: 'Joe',
         dateOfBirth: {
-          value: '1990-01-01',
-          operator: 'lte'
+          $lte: '1990-01-01'
         }
       },
       // The sort operations in order of precendence. The hyphen/minus sign
@@ -367,7 +364,7 @@ and [`ngResource`][ngResource].
     ... and get a URL that looks like this:
 
     ```
-    GET /api/students?filter[firstName]=Joe&filter[dateOfBirth][lte]=1990-01-01&order=lastName,-dateOfBirth&limit=10&offset=20
+    GET /api/students?filter[firstName]=Joe&filter[dateOfBirth][$lte]=1990-01-01&order=lastName,-dateOfBirth&limit=10&offset=20
     ```
 
     (For sake of sanity, let's assume 1-indexed page numbers.)
@@ -413,13 +410,54 @@ and [`ngResource`][ngResource].
     -   Turn `page` and `count` into `offset` and `limit`.
 
     Again, all of the code for these is in `resource.service.spec.js` and, as
-    expected, each one fails.
+    expected, each one fails. Let's make them pass! We've messed around with
+    `ngResource` enough that rewriting some parameters shouldn't be a big deal.
+    Drop a function right at the top of the factory definition that handles
+    the rewriting...
+
+    ```javascript
+    angular.module('studentManagerApp')
+      .factory('Resource', function($resource, $httpParamSerializerJQLike) {
+        var serialize = function(params) {
+          return $httpParamSerializerJQLike(params);
+        }
+    ```
+
+    ... and override the query method by defining a new one:
+
+    ```javascript
+    query: {
+      method: 'GET',
+      paramSerializer: serialize
+    },
+    ```
+
+    Documentation on this stuff ranges from limited to nonexistent. What's going
+    on here is pretty simple: the configuration of our custom methods gets
+    passed almost verbatim to `$http`, with `$resource` doing some rewriting to
+    accomplish its goals.
+
+    You're probably thinking, _as a person who is earnestly trying to follow
+    this aimless tour of Angular's guts, I would really like to know what the
+    hell that `$httpParamSerializerJQLike` thing is_. It's not as bad as its
+    name, fortunately. Remember how earlier when we tried to pass a complex JSON
+    object into `Student.query` it stringified it and embedded it in the URL?
+    That was its sister, `$httpParamSerializer`, which is used by default. The
+    reason we bother pulling in the longer, uglier service ("all HTTP parameter
+    serializers are beautiful, you superficial boor!") is that [it'll take care
+    of the bracket expansion for us][jquery-param]. Just using it here makes the
+    filter test pass.
+
+    Now we just massage the parameters into the structure that we want. None of
+    that is especially interesting; it's all in `resource.service.js` and the
+    tests pass so we're good.
 
 [3601-lab]: https://github.com/UMM-CSci-3601-S16/3601-S16-lab5_json-data-processing
 [barry]: http://www.morris.umn.edu/events/commencement/archive/2005/images/7.jpg
 [build-image]: https://travis-ci.org/dstelljes/angular-resource-demo.svg?branch=master
 [build-url]: https://travis-ci.org/dstelljes/angular-resource-demo
 [fullstack]: https://github.com/angular-fullstack/generator-angular-fullstack
+[jquery-param]: http://api.jquery.com/jquery.param/
 [jsonapi]: http://jsonapi.org/examples/
 [ngModel]: https://docs.angularjs.org/api/ng/directive/ngModel
 [ngResource]: https://docs.angularjs.org/api/ngResource

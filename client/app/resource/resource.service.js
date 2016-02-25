@@ -3,7 +3,38 @@
 // @see http://kirkbushell.me/angular-js-using-ng-resource-in-a-more-restful-manner/
 
 angular.module('badassStudentManagerApp')
-  .factory('Resource', function($resource) {
+  .factory('Resource', function($resource, $httpParamSerializerJQLike) {
+    var serialize = function(params) {
+      for (var key in params) {
+        switch (key) {
+          case 'count':
+            params['limit'] = params['count'];
+            delete params['count'];
+
+            break;
+
+          case 'order':
+            if (Array.isArray(params['order'])) {
+              params['order'] = params['order'].join(',');
+            }
+
+            break;
+
+          case 'page':
+            var limit = params['count'] || params['limit'] || 10;
+
+            params['limit'] = limit;
+            params['offset'] = (params['page'] - 1) * limit;
+            delete params['page'];
+
+            break;
+        }
+      }
+
+      // @see http://api.jquery.com/jquery.param/
+      return $httpParamSerializerJQLike(params);
+    };
+
     // So what we're doing here is writing something that'll transparently
     // replace $resource. Notice the signature is the same:
     return function(url, params, methods) {
@@ -11,6 +42,10 @@ angular.module('badassStudentManagerApp')
       var defaults = {
         create: {
           method: 'POST'
+        },
+        query: {
+          method: 'GET',
+          paramSerializer: serialize
         },
         update: {
           method: 'PUT',
@@ -28,10 +63,10 @@ angular.module('badassStudentManagerApp')
       methods = angular.extend(defaults, methods);
 
       // We pull in $resource with the new methods...
-      var resource = $resource(url, params, methods);
+      var Resource = $resource(url, params, methods);
 
       // ... and override the save function with something more intuitive:
-      resource.prototype.$save = function() {
+      Resource.prototype.$save = function() {
         if (!this._id) {
           return this.$create();
         }
@@ -40,6 +75,6 @@ angular.module('badassStudentManagerApp')
         }
       };
 
-      return resource;
+      return Resource;
     };
   });
