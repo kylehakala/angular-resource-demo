@@ -1,28 +1,54 @@
 <div class="container">
   <div class="row">
     <div class="col-lg-8">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Course count</th>
-          </tr>
-        </thead>
+      <div class="well">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-md-2 control-label">Sort by</label>
 
-        <tbody>
-          <tr ng-repeat="student in students">
-            <td>
-              <a ui-sref="student.detail({ id: student._id })">
-                {{ student.firstName }} {{ student.lastName }}
-              </a>
-            </td>
+            <div class="col-sm-10">
+              <div class="btn-group">
+                <button class="btn btn-default" ng-model="params.order" btn-radio="'lastName'">
+                  Last name
+                </button>
 
-            <td>
-              {{ student.courses.length }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <button class="btn btn-default" ng-model="params.order" btn-radio="'firstName'">
+                  First name
+                </button>
+
+                <button class="btn btn-default" ng-model="params.order" btn-radio="'dateOfBirth'">
+                  Date of birth
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="list-group">
+        <a class="list-group-item"
+            ng-repeat="student in students"
+            ui-sref=".detail({ id: student._id })"
+            ui-sref-active="active">
+          <h4 class="list-group-item-heading">
+            {{ student.firstName }} {{ student.lastName }}
+          </h4>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="list-group-item-text">
+                <div><strong>Class</strong></div>
+                <div>(N credits completed, N in progress)</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div><strong>{{ student.dateOfBirth | age }} years old</strong></div>
+              <div>(born {{ student.dateOfBirth }})</div>
+            </div>
+          </div>
+        </a>
+      </div>
     </div>
 
     <div class="col-lg-4">

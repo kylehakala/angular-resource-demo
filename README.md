@@ -479,6 +479,29 @@ and [`ngResource`][ngResource].
     and just like that, filter parameters work like we'd expect them to. Now we
     can actually put these new capabilities to work.
 
+## Rapidly adding features
+
+The reason that all this crap was worthwhile is that now we have a ridiculously
+powerful way to sort and filter stuff without having to pull down every single
+model on the server and deal with the data in Angular. Let's start knocking out
+features.
+
+*   **Ability to sort student index by last name, first name, and date of
+    birth:** All of this happens in `student.html` and `student.controller.js`.
+    Some highlights:
+
+    -   The `ui-sref-active` directive adds a class to a link if the state it's
+        `ui-sref`'d to is active. We're using the Bootstrap list group to
+        display students now, so we can highlight a selected student with one
+        line. Sweet.
+
+    -   `$scope.$watch` lets you manually watch properties. In this controller,
+        it detects changes to filters and sorting and hits the API with the
+        appropriate parameters.
+
+    -   [`Moment.js`][moment] is being used for date work. It's really great.
+
+
 [3601-lab]: https://github.com/UMM-CSci-3601-S16/3601-S16-lab5_json-data-processing
 [barry]: http://www.morris.umn.edu/events/commencement/archive/2005/images/7.jpg
 [build-image]: https://travis-ci.org/dstelljes/angular-resource-demo.svg?branch=master
@@ -487,6 +510,7 @@ and [`ngResource`][ngResource].
 [http-config]: https://docs.angularjs.org/api/ng/service/$http
 [jquery-param]: http://api.jquery.com/jquery.param/
 [jsonapi]: http://jsonapi.org/examples/
+[moment]: http://momentjs.com/
 [ngModel]: https://docs.angularjs.org/api/ng/directive/ngModel
 [ngResource]: https://docs.angularjs.org/api/ngResource
 [promises]: https://www.promisejs.org/

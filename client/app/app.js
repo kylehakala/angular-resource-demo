@@ -6,6 +6,7 @@ angular.module('badassStudentManagerApp', [
   'ngResource',
   'ngSanitize',
   'btford.socket-io',
+  'angularMoment',
   'ui.router',
   'ui.bootstrap'
 ])
