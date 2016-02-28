@@ -55,7 +55,9 @@ demonstrates what a more robust "real world" application might look like.
       email: String,
       phone: String,
       address: String,
-      courses: Array
+      courses: Array,
+      major1: String,
+      major2: String
     });
     ```
 
